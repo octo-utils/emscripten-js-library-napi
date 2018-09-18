@@ -1,0 +1,18 @@
+{
+  "name": "test-all",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "emcc-path": "node ../../../_bin/emcc-path",
+    "emscripten-js-library-napi-path": "node ../../../bin/emscripten-js-library-napi-path",
+    "install": "node-gyp rebuild",
+    "build:node": "node-gyp configure build",
+    "build:asmjs": "node-gyp configure build --asmjs=1",
+    "build:wasm": "node-gyp configure build --asmjs=1 --wasm=1"
+  },
+  "author": "",
+  "license": "ISC",
+  "gypfile": true
+}
