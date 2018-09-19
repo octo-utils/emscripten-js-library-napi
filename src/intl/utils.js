@@ -1,42 +1,3 @@
-export const sentinel_handle = -1;
-export const undefined_handle = 1;
-export const null_handle = 2;
-export const bool_handle = 3;
-export const global_handle = 5;
-
-export const SENTINEL = {};
-
-export let handles = [
-	"___", // sentinel
-	undefined,
-	null,
-	false,
-	true,
-  "___", // INTL.getGlobal()
-];
-
-export const _status_msgs = {
-	Ok: '',
-	InvalidArgument: 'Invalid pointer passed as argument',
-	ObjectExpected: 'An object was expected',
-	StringExpected: 'A string was expected',
-	NameExpected: 'A string or symbol was expected',
-	FunctionExpected: 'A function was expected',
-	NumberExpected: 'A number was expected',
-	BooleanExpected: 'A boolean was expected',
-	ArrayExpected: 'An array was expected',
-	GenericFailure: 'Unknown failure',
-	PendingException: 'An exception is pending',
-	Cancelled: 'The async work item was cancelled',
-};
-
-export var _last_error = 0;
-
-export var STATUS = Object.keys(_status_msgs).reduce(function(result, key, i) {
-	result[key] = new Function(`INTL._last_error = ${i}`);
-	return result;
-}, {});
-
 /*
 typedef struct {
   const char* error_message;
@@ -48,9 +9,9 @@ typedef struct {
 export var status_error_info = void 0;
 
 export function getStatusErrorInfo() {
-	if (status_error_info) return status_error_info;
+	if (INTL.status_error_info) return INTL.status_error_info;
 
-	status_error_info = Object.keys(INTL._status_msgs).map(function(key, i) {
+	INTL.status_error_info = Object.keys(INTL._status_msgs).map(function(key, i) {
 		/* eslint-disable no-undef */
 		// allocate space
 		var ptr = allocate(16, 'i8', ALLOC_STATIC);
@@ -62,7 +23,7 @@ export function getStatusErrorInfo() {
 		return ptr;
 	});
 
-	return status_error_info;
+	return INTL.status_error_info;
 };
 
 export function createValue(value) {
@@ -116,10 +77,9 @@ export function createException(Ctor, code, msg, result) {
 	return INTL.setValue(result, err);
 }
 
-export let _pending_exception = -1;
-
 export function hasPendingException() {
-	return INTL._pending_exception !== INTL.sentinel_handle;
+	INTL._ensureHandlesInit();
+	return INTL._pending_exception !== INTL.SENTINEL;
 }
 
 export function caughtException(exception) {
@@ -129,9 +89,10 @@ export function caughtException(exception) {
 }
 
 export function extractPendingException() {
+	INTL._ensureHandlesInit();
 	var exception = INTL._pending_exception;
-  // todo: if exception === INTL.sentinel_handle
-	INTL._pending_exception = INTL.sentinel_handle;
+  // todo: if exception === INTL.SENTINEL
+	INTL._pending_exception = INTL.SENTINEL;
 	return exception;
 }
 
@@ -276,6 +237,7 @@ export function isNativeReflectConstruct() {
 }
 
 export function callConstructor(Parent, args, Class) {
+	var _construct;
 	if (INTL.isNativeReflectConstruct()) {
 		_construct = Reflect.construct;
 	} else {

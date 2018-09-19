@@ -78,9 +78,31 @@ export function napi_new_instance(env, classCtorPtr, argc, argv, result) {
 export function napi_wrap(
   env, objectPtr, nativeObjectPtr, nativeFinalizeCallbackPtr, finalizeHint, result
 ) {
+  var object = INTL.handles[objectPtr];
 
+  Object.defineProperty(object, INTL.getKeyNapiWrap(), {
+    enumerable: false,
+    writable: true,
+    value: Object.freeze([nativeObjectPtr, nativeFinalizeCallbackPtr, finalizeHint])
+  });
+
+  INTL.setResult(result, objectPtr);
+
+  return INTL.STATUS.Ok();
 }
 
 export function napi_unwrap(env, objectPtr, result) {
+  var object = INTL.handles[objectPtr];
+  var wrapped_info = object[INTL.getKeyNapiWrap()];
 
+  if (typeof object !== "object") {
+    return INTL.STATUS.ObjectExpected();
+  }
+
+  if (Array.isArray(wrapped_info)) {
+    var nativeObjectPtr = wrapped_info[0];
+    INTL.setResult(result, nativeObjectPtr);
+  }
+
+  return INTL.STATUS.Ok();
 }
