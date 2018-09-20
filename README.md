@@ -4,11 +4,18 @@
 
 ### Build
 
-WIP...
+```bash
+npm install --save-dev
+npm run gulp -- build # output in lib/library_napi.js
+```
 
-### Test
+### Test Enviroment
 
-WIP...
+to compile native code to `asm.js` or `wasm`, you have to install emscripten tools (`emcc`,`llvm`, etc.), you can install them with [emsdk](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html).
+
+### Test 
+
+see `./test/fixtures` 
 
 ### Related
 
