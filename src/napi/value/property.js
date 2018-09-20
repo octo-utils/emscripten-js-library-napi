@@ -17,15 +17,15 @@ export function napi_get_property_names(env, obj, result) {
 }
 
 export function napi_set_named_property(env, obj, name, value) {
-	return napi_set_element(env, obj, INTL.UTF8ToString(name), value);
+	return napi_set_element(env, obj, UTF8ToString(name), value);
 }
 
 export function napi_get_named_property(env, obj, name, result) {
-	return napi_get_element(env, obj, INTL.UTF8ToString(name), result);
+	return napi_get_element(env, obj, UTF8ToString(name), result);
 }
 
 export function napi_has_named_property(env, obj, name, result) {
-	return napi_has_element(env, obj, INTL.UTF8ToString(name), result);
+	return napi_has_element(env, obj, UTF8ToString(name), result);
 }
 
 export function napi_set_element(env, obj, index, value) {
@@ -34,8 +34,8 @@ export function napi_set_element(env, obj, index, value) {
 	}
 	// safeJS doesn't help here because we don't have result
 	// so it's fine to do some duplication
-	var obj_ = handles[obj];
-	var value_ = handles[value];
+	var obj_ = INTL.handles[obj];
+	var value_ = INTL.handles[value];
 	try {
 		obj_[index] = value_;
 		return INTL.STATUS.Ok();

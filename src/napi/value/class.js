@@ -106,3 +106,14 @@ export function napi_unwrap(env, objectPtr, result) {
 
   return INTL.STATUS.Ok();
 }
+
+export function napi_remove_wrap(env, objectPtr, result) {
+  var object = INTL.handles[objectPtr];
+  var wrapped_info = object[INTL.getKeyNapiWrap()];
+  if (Array.isArray(wrapped_info)) {
+    var nativeObjectPtr = wrapped_info[0];
+    INTL.setResult(result, nativeObjectPtr);
+    object[INTL.getKeyNapiWrap()] = void 0;
+  }
+  return INTL.STATUS.Ok();
+}

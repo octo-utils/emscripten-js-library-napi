@@ -121,12 +121,26 @@ export function withNewScope(callback) {
 
 export function wrapCallback(ptr, data, name = "") {
 	var func = INTL.getFunctionPointers()[ptr];
+
+	if (!name) {
+		return function () {
+			var cbInfo = {
+				this: this,
+				args: Array.prototype.slice.call(arguments),
+				data: data,
+			};
+			return INTL.withNewScope(function () {
+				return INTL.handles[func(0, INTL.createValue(cbInfo))];
+			});
+		};
+	}
+
 	return new Function('ptr', 'data', 'func', 'INTL', `
 		return function ${name}(/*...args*/) {
 			var cbInfo = {
 				this: this,
 				args: Array.prototype.slice.call(arguments),
-				data,
+				data: data,
 			};
 			return INTL.withNewScope(function() {
 				return INTL.handles[func(0, INTL.createValue(cbInfo))];
@@ -213,6 +227,7 @@ export function readProps(propCount, props) {
       descriptor.value = value_handle ? handles[value_handle] : INTL.wrapCallback(method_ptr, data)
     } else {
 			if (getter_ptr !== 0) {
+				var get_func = INTL.getFunctionPointers()[getter_ptr];
 				descriptor.get = INTL.wrapCallback(getter_ptr, data)
 			}
 			if (setter_ptr !== 0) {

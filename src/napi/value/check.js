@@ -34,7 +34,7 @@ export function napi_is_typedarray(env, value, result) {
 	}
 	// can't fail, only checks if an internal slot is present
 	// https://tc39.github.io/ecma262/#sec-arraybuffer.isview
-	return INTL.setResult(result, ArrayBuffer.isView(handles[value]));
+	return INTL.setResult(result, ArrayBuffer.isView(INTL.handles[value]));
 }
 
 export function napi_typeof(env, value, result) {

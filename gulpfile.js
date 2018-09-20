@@ -11,6 +11,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const streamToPromise = require("stream-to-promise");
 const taskFetchDeps = require("gulp-task-fetch-deps");
 const rename = require("gulp-rename");
+const transformEmscriptenLibrary = require("./tools/browserify-transform-emscripten-library");
 // rollup
 // const rollup = require('rollup');
 // const rbabel = require('rollup-plugin-babel');
@@ -26,13 +27,15 @@ const b = browserify({
   entries:"./src/index.js",
   debug: false
 })
+  .transform(transformEmscriptenLibrary)
   .transform(babelify, {
     ...babelrc
   });
 
 function bundle(b) {
   return streamToPromise(
-    b.bundle().on('error', e => log(e))
+    b.bundle()
+      .on("error", swallowError())
       .pipe(source('library_napi.js'))
       .pipe(buffer())
       // .pipe(sourcemaps.init({ loadMaps: true }))
@@ -44,20 +47,6 @@ function bundle(b) {
 
 gulp.task("build", _ => {
   return bundle(b);
-  // return rollup.rollup({
-  //   input: "./src/index.js",
-  //   plugins: [
-  //     rresolve({jsnext: true}),
-  //     rbabel({ ...babelrc }),
-  //   ]
-  // })
-  //   .then(function (bundle) {
-  //     bundle.write({
-  //       file: "library_napi.js",
-  //       format: "cjs",
-  //       dir: "./lib"
-  //     });
-  //   });
 });
 
 gulp.task("build-watch", gulp.series("build", _ => {
@@ -75,3 +64,11 @@ gulp.task("default", gulp.series("build"));
 gulp.task("fetch-include-deps", taskFetchDeps(
   require("./include/deps"), "./include", null
 ));
+
+function swallowError() {
+  return function (err) {
+    log(err.toString());
+    this.emit('end');
+    this.emit('finish');
+  }
+}

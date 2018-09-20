@@ -10,25 +10,19 @@
     {
       "type": "executable",
       "cflags": [
-        "-O2", "-s DEMANGLE_SUPPORT=1", "-s ASSERTIONS=2", "-s SAFE_HEAP=1",
+        "-Os", "-s DEMANGLE_SUPPORT=1", "-s ASSERTIONS=2", "-s SAFE_HEAP=1",
         "-s ALIASING_FUNCTION_POINTERS=0", "--js-library",
         "<!(npm run -s emscripten-js-library-napi-path)"
       ],
       "cflags_cc": ["-std=c++11", "-fno-exceptions"],
       "ldflags": [
         "<@(_cflags)",
-        "--memory-init-file",
-        "0",
-        "-s",
-        "PRECISE_F32=1",
-        "-s",
-        "NO_FILESYSTEM=1",
+        "--memory-init-file 0",
+        "-s PRECISE_F32=1",
+        "-s NO_FILESYSTEM=1",
         "-s RESERVED_FUNCTION_POINTERS=3",
-        # "-s EMULATE_FUNCTION_POINTER_CASTS=1",
         "-s EXPORT_FUNCTION_TABLES=1",
-        # "-s", "MODULARIZE=1",
-        "-s",
-        "TOTAL_MEMORY=256MB",
+        "-s TOTAL_MEMORY=16MB",
         # "-s", "TOTAL_MEMORY=134217728",
         # "-s", "EXTRA_EXPORTED_RUNTIME_METHODS=[\'ccall\']"
       ],

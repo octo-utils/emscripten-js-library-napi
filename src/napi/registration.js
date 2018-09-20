@@ -10,7 +10,7 @@ export function napi_module_register(info) {
   INTL.releaseValue(INTL.getExports());
 
   if (new_exports_handle !== 0 && new_exports_handle !== exports_handle) {
-    const exports_ = handles[new_exports_handle];
+    const exports_ = INTL.handles[new_exports_handle];
     INTL.setExports(exports_);
   }
 }

@@ -63,11 +63,3 @@ export function napi_get_value_string_utf8(env, value, buf, bufSize, result) {
 	}
 	return INTL.setResult(result, value_to_return);
 }
-
-export function napi_get_value_string_utf16(env, value, buf, bufSize, result) {
-	return napi_get_value_string_utf8(env, value, buf, bufSize, result);
-}
-
-export function napi_get_value_string_latin1(env, value, buf, bufSize, result) {
-	return napi_get_value_string_utf8(env, value, buf, bufSize, result);
-}

@@ -1,0 +1,45 @@
+#include "myobject.h"
+#include "../common.h"
+
+napi_value ReleaseObject(napi_env env, napi_callback_info info) {
+  size_t argc = 1;
+  napi_value args[1];
+  NAPI_CALL(env, napi_get_cb_info(env, info, &argc, args, nullptr, nullptr));
+
+  MyObject* obj;
+  NAPI_CALL(env, napi_remove_wrap(env, args[0], reinterpret_cast<void**>(&obj)));
+
+  MyObject::Destructor(env, obj, nullptr); // release memory manually
+  
+  napi_value result;
+  napi_get_boolean(env, false, &result);
+  return result;
+}
+
+napi_value CreateObject(napi_env env, napi_callback_info info) {
+  size_t argc = 1;
+  napi_value args[1];
+  NAPI_CALL(env, napi_get_cb_info(env, info, &argc, args, nullptr, nullptr));
+
+  napi_value instance;
+  NAPI_CALL(env, MyObject::NewInstance(env, args[0], &instance));
+
+  return instance;
+}
+
+napi_value Init(napi_env env, napi_value exports) {
+  NAPI_CALL(env, MyObject::Init(env));
+
+  napi_property_descriptor descriptors[] = {
+    DECLARE_NAPI_GETTER("finalizeCount", MyObject::GetFinalizeCount),
+    DECLARE_NAPI_PROPERTY("createObject", CreateObject),
+    DECLARE_NAPI_PROPERTY("releaseObject", ReleaseObject),
+  };
+
+  NAPI_CALL(env, napi_define_properties(
+      env, exports, sizeof(descriptors) / sizeof(*descriptors), descriptors));
+
+  return exports;
+}
+
+NAPI_MODULE(NODE_GYP_MODULE_NAME, Init)

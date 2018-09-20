@@ -4,7 +4,7 @@ export function napi_get_cb_info(env, cbinfoPtr, argcPtr, argvPtr, thisArgPtr, d
 	const { STATUS, handles } = INTL;
 	var cbinfo = handles[cbinfoPtr];
 	var argcPtr_ = argcPtr >> 2;
-	var argc = HEAPU32[argcPtr_];
+	var argc = argcPtr_ === 0 ? 0 : HEAPU32[argcPtr_];
 	var actualArgc = cbinfo.args.length;
 	HEAPU32[argcPtr_] = actualArgc;
 	if (argc < actualArgc) {
@@ -18,6 +18,7 @@ export function napi_get_cb_info(env, cbinfoPtr, argcPtr, argvPtr, thisArgPtr, d
 	for (; i < argc; i++) {
 		HEAPU32[argvPtr_ + i] = INTL.undefined_handle;
 	}
+
 	if (thisArgPtr !== 0) {
 		INTL.setValue(thisArgPtr, cbinfo.this);
 	}

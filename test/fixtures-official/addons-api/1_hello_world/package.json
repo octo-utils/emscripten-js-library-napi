@@ -1,0 +1,14 @@
+{
+  "name": "1_hello_world",
+  "main": "test.js",
+  "scripts": {
+    "install": "node-gyp rebuild",
+    "emcc-path": "node ../../../../_bin/emcc-path",
+    "emscripten-js-library-napi-path": "node ../../../../bin/emscripten-js-library-napi-path",
+    "build:node": "node-gyp configure build",
+    "build:asmjs": "node-gyp configure build --asmjs=1",
+    "build:wasm": "node-gyp configure build --asmjs=1 --wasm=1",
+    "test": "node ./test.js"
+  },
+  "gypfile": true
+}
