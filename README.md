@@ -1,4 +1,4 @@
-### emscripten-napi
+### emscripten-js-library-napi
 
 ([N-API](https://nodejs.org/api/n-api.html)) implement for emscripten.
 

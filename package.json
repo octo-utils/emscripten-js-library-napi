@@ -1,5 +1,5 @@
 {
-  "name": "emscripten-napi",
+  "name": "emscripten-js-library-napi",
   "version": "0.0.1",
   "description": "([N-API](https://nodejs.org/api/n-api.html)) implement for emscripten.",
   "main": "lib/js-library-napi.js",
