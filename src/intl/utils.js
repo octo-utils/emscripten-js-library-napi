@@ -34,19 +34,6 @@ export function createValue(value) {
 	return index;
 }
 
-export function releaseValueByIndex(index) {
-	if (index > INTL.global_handle) {
-		INTL.handles[index] = null;
-	}
-}
-
-export function releaseValue(value) {
-	let index = INTL.handles.indexOf(value);
-	if (index > INTL.global_handle) {
-		INTL.handles[index] = null;
-	}
-}
-
 export function setResult(result, value) {
 	HEAPU32[result >> 2] = value;
 	return INTL.STATUS.Ok();
@@ -54,6 +41,23 @@ export function setResult(result, value) {
 
 export function setValue(result, value) {
 	return INTL.setResult(result, INTL.createValue(value));
+}
+
+export function createReference(value) {
+	let ref = INTL.references.indexOf(value);
+	if (ref < 0) {
+		ref = INTL.references.length;
+		INTL.references.push(value);
+	}
+	return ref;
+}
+
+export function deleteReference(value) {
+	let ref = INTL.references.indexOf(value);
+	if (ref >= 0) {
+		INTL.references[ref] = void 0;
+	}
+	return ref;
 }
 
 export function setPendingException(exception) {
@@ -70,7 +74,7 @@ export function throwException(Ctor, code, msg) {
 }
 
 export function createException(Ctor, code, msg, result) {
-	let err = new Ctor(handles[msg]);
+	let err = new Ctor(INTL.handles[msg]);
 	if (code !== 0) {
 		err.code = INTL.handles[code];
 	}
@@ -154,6 +158,10 @@ export function readString(ptr, length) {
 	return length === -1 ? UTF8ToString(ptr) : Pointer_stringify(ptr, length);
 }
 
+export function writeString(ptr, string, length) {
+	return stringToUTF8(ptr, string, length);
+}
+
 export function safeJS(result, toValue, callback, ...args) {
 	if (INTL.hasPendingException()) {
 		return INTL.STATUS.PendingException();
@@ -220,6 +228,7 @@ export function readProps(propCount, props) {
 			name,
 			enumerable: !!(attributes & property_attributes.enumerable),
 			configurable: !!(attributes & property_attributes.configurable),
+			static: !!(attributes & property_attributes.static)
 		};
 
     if (value_handle || method_ptr) {
@@ -265,6 +274,7 @@ export function callConstructor(Parent, args, Class) {
 			return instance;
 		};
 	}
+	
 	return _construct.apply(null, arguments);
 }
 
@@ -280,6 +290,6 @@ export function getFunctionPointers() {
 	if (typeof FUNCTION_TABLE_iii !== "undefined") {
 		return FUNCTION_TABLE_iii;
 	}
-	console.log(functionPointers);
+	// console.log(functionPointers);
 	throw "FUNCTION_TABLE_iii is undefined"
 }

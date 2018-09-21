@@ -8,16 +8,21 @@ export function napi_define_class(env, namePtr, nameLen, ctorPtr, data, propCoun
   var className = INTL.readString(namePtr, nameLen);
   var descriptors = INTL.readProps(propCount, props);
 
+  var descriptorsStatic = Object.create(null);
   var descriptorsOfValue = Object.create(null);
   var descriptorsEtc = Object.create(null);
 
   for (let i = 0; i < descriptors.length; i++) {
     var descriptor = descriptors[i];
     var typeofDescriptorValue = typeof descriptor.value
-    if (typeofDescriptorValue !== "function" && !descriptor.get && !descriptor.set) {
-      descriptorsOfValue[descriptor.name] = descriptor;
+    if (descriptor.static) {
+      descriptorsStatic[descriptor.name] = descriptor;
     } else {
-      descriptorsEtc[descriptor.name] = descriptor;
+      if (typeofDescriptorValue !== "function" && !descriptor.get && !descriptor.set) {
+        descriptorsOfValue[descriptor.name] = descriptor;
+      } else {
+        descriptorsEtc[descriptor.name] = descriptor;
+      }
     }
   }
 
@@ -41,6 +46,7 @@ export function napi_define_class(env, namePtr, nameLen, ctorPtr, data, propCoun
   return Ctor_;`
 	)(INTL.getFunctionPointers()[ctorPtr], data, descriptorsOfValue, INTL);
 
+  Object.defineProperties(classCtor, descriptorsStatic);
   Object.defineProperties(classCtor.prototype, descriptorsEtc);
 
   try {
@@ -51,6 +57,10 @@ export function napi_define_class(env, namePtr, nameLen, ctorPtr, data, propCoun
 }
 
 export function napi_get_new_target(env, cbInfoPtr, result) {
+  if (INTL.hasPendingException()) {
+		return INTL.STATUS.PendingException();
+	}
+  
   var cbInfo = INTL.handles[cbInfoPtr];
   if (cbInfo.__newTarget) {
     return INTL.setValue(result, cbInfo.__newTarget);
@@ -59,9 +69,18 @@ export function napi_get_new_target(env, cbInfoPtr, result) {
 }
 
 export function napi_new_instance(env, classCtorPtr, argc, argv, result) {
+  if (INTL.hasPendingException()) {
+		return INTL.STATUS.PendingException();
+	}
+
   const { handles } = INTL;
 
   var classCtor = handles[classCtorPtr];
+
+  if (typeof classCtor !== "function" || classCtorPtr < INTL.global_handle) {
+    return INTL.STATUS.FunctionExpected();
+  }
+
   var argv_ = argv >> 2;
 	var args = new Array(argc);
   for (var i = 0; i < argc; i++) {
@@ -78,6 +97,10 @@ export function napi_new_instance(env, classCtorPtr, argc, argv, result) {
 export function napi_wrap(
   env, objectPtr, nativeObjectPtr, nativeFinalizeCallbackPtr, finalizeHint, result
 ) {
+  if (INTL.hasPendingException()) {
+		return INTL.STATUS.PendingException();
+	}
+
   var object = INTL.handles[objectPtr];
 
   Object.defineProperty(object, INTL.getKeyNapiWrap(), {
@@ -86,18 +109,22 @@ export function napi_wrap(
     value: Object.freeze([nativeObjectPtr, nativeFinalizeCallbackPtr, finalizeHint])
   });
 
-  INTL.setResult(result, objectPtr);
-
-  return INTL.STATUS.Ok();
+  return INTL.setResult(result, INTL.createReference(object));
 }
 
 export function napi_unwrap(env, objectPtr, result) {
+  if (INTL.hasPendingException()) {
+		return INTL.STATUS.PendingException();
+	}
+
   var object = INTL.handles[objectPtr];
   var wrapped_info = object[INTL.getKeyNapiWrap()];
 
   if (typeof object !== "object") {
     return INTL.STATUS.ObjectExpected();
   }
+
+  // console.log("napi_unwrap", objectPtr, object, wrapped_info);
 
   if (Array.isArray(wrapped_info)) {
     var nativeObjectPtr = wrapped_info[0];
@@ -108,6 +135,10 @@ export function napi_unwrap(env, objectPtr, result) {
 }
 
 export function napi_remove_wrap(env, objectPtr, result) {
+  if (INTL.hasPendingException()) {
+		return INTL.STATUS.PendingException();
+	}
+
   var object = INTL.handles[objectPtr];
   var wrapped_info = object[INTL.getKeyNapiWrap()];
   if (Array.isArray(wrapped_info)) {

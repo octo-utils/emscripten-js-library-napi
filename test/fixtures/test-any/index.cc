@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <node_api.h>
 #include <assert.h>
 #include <string>
@@ -7,6 +8,19 @@
 
 #define DECLARE_NAPI_VALUE(name, value)                          \
   { name, 0, 0, 0, 0, value, napi_default, 0 }
+
+class SomeClass {
+  public:
+    int value;
+    SomeClass() {
+      value = 0;
+    };
+    void setValue(int value_to_set) {
+      this -> value = value_to_set;
+    };
+};
+
+static SomeClass global_instance;
 
 napi_value Noop(napi_env env, napi_callback_info info) {
   // napi_status status;
@@ -35,6 +49,7 @@ napi_value Method(napi_env env, napi_callback_info info) {
 }
 
 napi_value SomeClassCtor(napi_env env, napi_callback_info info) {
+  // printf("global_instance %d\n", global_instance.value);
   napi_status status;
 
   size_t argc = 1;
@@ -52,10 +67,15 @@ napi_value SomeClassCtor(napi_env env, napi_callback_info info) {
 
   napi_value result;
   napi_get_undefined(env, &result);
+
   return result;
 }
 
 napi_value Init(napi_env env, napi_value exports) {
+  global_instance = SomeClass();
+  global_instance.setValue(233);
+  // printf("global_instance %d\n", global_instance.value);
+
   napi_status status;
   {
     napi_property_descriptor desc = DECLARE_NAPI_FUNCTION("hello", Method);

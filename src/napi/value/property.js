@@ -13,7 +13,7 @@ export function napi_has_property(env, obj, key, result) {
 }
 
 export function napi_get_property_names(env, obj, result) {
-	return INTL.safeJS(result, true, Object.keys, result);
+	return INTL.safeJS(result, true, Object.keys, INTL.handles[obj]);
 }
 
 export function napi_set_named_property(env, obj, name, value) {

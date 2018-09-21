@@ -20,10 +20,17 @@ export let _pending_exception = void 0;
 
 export function _ensureHandlesInit() {
 	if (!INTL.SENTINEL) {
-		INTL.handles[0] = INTL._pending_exception = INTL.SENTINEL = Symbol();
+		INTL.handles[0] = INTL._pending_exception 
+			= INTL.references[0] 
+			= INTL.SENTINEL
+			= Symbol();
   	INTL.handles[INTL.global_handle] = INTL.getGlobal();
 	}
 }
+
+export let references = [
+	"___", // sentinel
+];
 
 export const _status_msgs = {
 	Ok: '',

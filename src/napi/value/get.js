@@ -54,12 +54,15 @@ export function napi_get_array_length(env, value, result) {
 }
 
 export function napi_get_value_string_utf8(env, value, buf, bufSize, result) {
-	if (typeof value !== "string") {
+	var value_ = INTL.handles[value];
+	if (typeof value_ !== "string") {
 		return INTL.STATUS.StringExpected();
 	}
-	var value_to_return = value;
-	if (bufSize < value.length) {
-		value_to_return = value.substring(0, bufSize - 1);
+
+	var bufSize_ = bufSize;
+	if (bufSize === 0) {
+		bufSize_ = value_.length + 1;
 	}
-	return INTL.setResult(result, value_to_return);
+
+	return INTL.setResult(result, INTL.writeString(value_, buf, bufSize_));
 }

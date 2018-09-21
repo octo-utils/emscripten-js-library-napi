@@ -1,4 +1,4 @@
-const TARGET = require("./fixtures/test-all/build/Release/test_all.js");
+const TARGET = require("./fixtures/test-any/build/Release/test_any.js");
 const { expect } = require("chai");
 
 describe('test-all', function() {
