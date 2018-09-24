@@ -44,7 +44,7 @@ export function napi_define_class(env, namePtr, nameLen, ctorPtr, data, propCoun
     ctor(0, INTL.createValue(cbInfo));
   };
   return Ctor_;`
-	)(INTL.getFunctionPointers()[ctorPtr], data, descriptorsOfValue, INTL);
+	)(INTL.getFunctionPointer(ctorPtr), data, descriptorsOfValue, INTL);
 
   Object.defineProperties(classCtor, descriptorsStatic);
   Object.defineProperties(classCtor.prototype, descriptorsEtc);

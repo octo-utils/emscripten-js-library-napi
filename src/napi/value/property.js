@@ -85,6 +85,8 @@ export function napi_define_properties(env, objPtr, propCount, props) {
   // let props_ = props >> 2;
 	const obj_ = handles[objPtr];
 	const descriptors = INTL.readProps(propCount, props);
+
+	// console.log("napi_define_properties", obj_, descriptors);
 	
 	for (let i = 0; i < descriptors.length; i++) {
 		let desc = descriptors[i];

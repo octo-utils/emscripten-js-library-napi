@@ -74,6 +74,7 @@ napi_value SomeClassCtor(napi_env env, napi_callback_info info) {
 napi_value Init(napi_env env, napi_value exports) {
   global_instance = SomeClass();
   global_instance.setValue(233);
+  printf("should output 233, actual %d\n", global_instance.value);
   // printf("global_instance %d\n", global_instance.value);
 
   napi_status status;
@@ -125,9 +126,9 @@ napi_value Init(napi_env env, napi_value exports) {
   }
   /****/
 
-  /** napi_wrap, napi_unwrap **/
+  // /** napi_wrap, napi_unwrap **/
 
-  /****/
+  // /****/
   
   if (status != napi_ok) {
     const napi_extended_error_info *error_info;

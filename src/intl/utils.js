@@ -124,7 +124,7 @@ export function withNewScope(callback) {
 }
 
 export function wrapCallback(ptr, data, name = "") {
-	var func = INTL.getFunctionPointers()[ptr];
+	var func = INTL.getFunctionPointer(ptr);
 
 	if (!name) {
 		return function () {
@@ -236,7 +236,7 @@ export function readProps(propCount, props) {
       descriptor.value = value_handle ? handles[value_handle] : INTL.wrapCallback(method_ptr, data)
     } else {
 			if (getter_ptr !== 0) {
-				var get_func = INTL.getFunctionPointers()[getter_ptr];
+				var get_func = INTL.getFunctionPointer(getter_ptr);
 				descriptor.get = INTL.wrapCallback(getter_ptr, data)
 			}
 			if (setter_ptr !== 0) {
@@ -286,10 +286,13 @@ export function _setPrototypeOf(o, p) {
 	return INTL._setPrototypeOf(o, p);
 }
 
-export function getFunctionPointers() {
-	if (typeof FUNCTION_TABLE_iii !== "undefined") {
-		return FUNCTION_TABLE_iii;
+export function getFunctionPointer(ptr) {
+	if (typeof invoke_iii === "function") {
+		return function() {
+			var args = Array.prototype.slice.call(arguments);
+			var argsLength = args.length;
+			return invoke_iii.apply(null, [ptr].concat(args)); 
+		}
 	}
-	// console.log(functionPointers);
-	throw "FUNCTION_TABLE_iii is undefined"
+	throw "function table not found";
 }

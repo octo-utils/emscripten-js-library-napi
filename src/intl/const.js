@@ -59,12 +59,21 @@ export let _module_ref = void 0;
 
 export function readModule(ptr) {
 	ptr >>= 2;
+
+	var version = HEAPU32[ptr++];
+	var flags = HEAPU32[ptr++];
+	var filenamePtr = HEAPU32[ptr++];
+	var registerFuncPtr = HEAPU32[ptr++];
+	var modnamePtr = HEAPU32[ptr++];
+
+	// console.log(version, flags, filenamePtr, registerFuncPtr, modnamePtr);
+
 	return {
-		version: HEAPU32[ptr++],
-		flags: HEAPU32[ptr++],
-		filename: UTF8ToString(HEAPU32[ptr++]),
-		registerFunc: INTL.getFunctionPointers()[HEAPU32[ptr++]],
-		modname: UTF8ToString(HEAPU32[ptr++]),
+		version,
+		flags,
+		filename: UTF8ToString(filenamePtr),
+		registerFunc: INTL.getFunctionPointer(registerFuncPtr),
+		modname: UTF8ToString(modnamePtr),
 	};
 }
 
@@ -82,11 +91,12 @@ export function getModule() {
 
 export function getExports() {
   if (!INTL._exports_ref) {
-    const module = INTL.getModule();
-    if (module.exports === Module) {
-      module.exports = {};
-    }
-    INTL._exports_ref = module.exports;
+		INTL._exports_ref = {};
+    // const module = INTL.getModule();
+    // if (typeof Module !== "undefined" && module.exports === Module) {
+    //   module.exports = {};
+    // }
+    // INTL._exports_ref = module.exports;
   }
   return INTL._exports_ref;
 }
