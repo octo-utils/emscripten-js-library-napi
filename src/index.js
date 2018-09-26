@@ -17,6 +17,9 @@ const $INTL = INTL;
 
 const LibraryNapi = {
   $INTL,
+  napi_module_register__postset: `
+  INTL._ensureHandlesInit();
+  `,
   napi_module_register,
   ...valueProperty,
   ...valueCheck,

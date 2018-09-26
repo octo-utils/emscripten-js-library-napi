@@ -82,7 +82,7 @@ export function createException(Ctor, code, msg, result) {
 }
 
 export function hasPendingException() {
-	INTL._ensureHandlesInit();
+	// INTL._ensureHandlesInit();
 	return INTL._pending_exception !== INTL.SENTINEL;
 }
 
@@ -93,7 +93,7 @@ export function caughtException(exception) {
 }
 
 export function extractPendingException() {
-	INTL._ensureHandlesInit();
+	// INTL._ensureHandlesInit();
 	var exception = INTL._pending_exception;
   // todo: if exception === INTL.SENTINEL
 	INTL._pending_exception = INTL.SENTINEL;
