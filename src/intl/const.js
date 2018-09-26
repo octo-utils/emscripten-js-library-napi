@@ -101,9 +101,10 @@ export function getExports() {
   return INTL._exports_ref;
 }
 
-export function setExports(new_exports) {
+export function setExports(exports) {
   const module = INTL.getModule();
-  module.exports = new_exports;
+	Module["napiExports"] = exports;
+  module.exports = exports;
 }
 
 export const property_attributes = Object.freeze({
