@@ -43,6 +43,9 @@ export function napi_define_class(env, namePtr, nameLen, ctorPtr, data, propCoun
     Object.defineProperties(this, descriptorsOfValue);
     ctor(0, INTL.createValue(cbInfo));
   };
+  Ctor_.toString = function() { 
+    return "class ${className} { [emscripten-js-library-napi internal code] }";
+  };
   return Ctor_;`
 	)(INTL.getFunctionPointer(ctorPtr), data, descriptorsOfValue, INTL);
 

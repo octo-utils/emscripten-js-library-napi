@@ -14,7 +14,7 @@ export function napi_instanceof(env, value, Ctor, result) {
 			return value instanceof Ctor;
 		},
 		INTL.handles[value],
-		Ctor
+		INTL.handles[Ctor]
 	);
 }
 
