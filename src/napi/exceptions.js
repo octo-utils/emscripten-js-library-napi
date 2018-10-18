@@ -21,7 +21,7 @@ export function napi_create_range_error(env, code, msg, result) {
 }
 
 export function napi_throw(env, error) {
-	const status = INTL.setPendingException(INTL.handles[error]);
+	const status = INTL.setPendingException(INTL.getValue(error));
 	throw INTL._pending_exception;
 	return status;
 }
@@ -45,7 +45,7 @@ export function napi_throw_range_error(env, code, msg) {
 }
 
 export function napi_is_exception_pending(env, result) {
-	return INTL.setResult(result, INTL.hasPendingException());
+	return INTL.setValue(result, INTL.hasPendingException());
 }
 
 export function napi_get_and_clear_last_exception(env, result) {
@@ -53,5 +53,5 @@ export function napi_get_and_clear_last_exception(env, result) {
 }
 
 export function napi_get_last_error_info(env, result) {
-	return INTL.setResult(result, INTL.getStatusErrorInfo()[lastError]);
+	return INTL.setResult(result, INTL.getStatusErrorInfo()[INTL._last_error]); 
 }

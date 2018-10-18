@@ -17,7 +17,7 @@ export function napi_get_global(env, result) {
 }
 
 export function napi_get_value_double(env, value, result) {
-	var value_ = INTL.handles[value];
+	var value_ = INTL.getValue(value);
 	if (typeof value_ !== 'number') {
 		return INTL.STATUS.NumberExpected();
 	}
@@ -26,7 +26,7 @@ export function napi_get_value_double(env, value, result) {
 }
 
 export function napi_get_value_uint32(env, value, result) {
-	var value_ = INTL.handles[value];
+	var value_ = INTL.getValue(value);
 	if (typeof value_ !== 'number') {
 		return INTL.STATUS.NumberExpected();
 	}
@@ -38,7 +38,7 @@ export function napi_get_value_int32(env, value, result) {
 }
 
 export function napi_get_value_bool(env, value, result) {
-	var value_ = INTL.handles[value];
+	var value_ = INTL.getValue(value);
 	if (typeof value_ !== 'boolean') {
 		return INTL.STATUS.BooleanExpected();
 	}
@@ -46,7 +46,7 @@ export function napi_get_value_bool(env, value, result) {
 }
 
 export function napi_get_array_length(env, value, result) {
-	var value_ = INTL.handles[value];
+	var value_ = INTL.getValue(value);
 	if (!Array.isArray(value_)) {
 		return INTL.STATUS.ArrayExpected();
 	}
@@ -54,7 +54,7 @@ export function napi_get_array_length(env, value, result) {
 }
 
 export function napi_get_value_string_utf8(env, value, buf, bufSize, result) {
-	var value_ = INTL.handles[value];
+	var value_ = INTL.getValue(value);
 	if (typeof value_ !== "string") {
 		return INTL.STATUS.StringExpected();
 	}

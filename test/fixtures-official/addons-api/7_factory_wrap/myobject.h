@@ -2,6 +2,7 @@
 #define TEST_ADDONS_NAPI_7_FACTORY_WRAP_MYOBJECT_H_
 
 #include <node_api.h>
+#include <set>
 
 class MyObject {
  public:
@@ -22,6 +23,9 @@ class MyObject {
   uint32_t counter_;
   napi_env env_;
   napi_ref wrapper_;
+
+ public:
+  static std::set<MyObject*> pool;
 };
 
 #endif  // TEST_ADDONS_NAPI_7_FACTORY_WRAP_MYOBJECT_H_

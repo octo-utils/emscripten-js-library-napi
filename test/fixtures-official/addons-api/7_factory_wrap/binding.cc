@@ -1,18 +1,25 @@
 #include "myobject.h"
 #include "../common.h"
+#include <stdio.h>
+#include <set>
 
 napi_value ReleaseObject(napi_env env, napi_callback_info info) {
   size_t argc = 1;
   napi_value args[1];
   NAPI_CALL(env, napi_get_cb_info(env, info, &argc, args, nullptr, nullptr));
 
-  MyObject* obj;
-  NAPI_CALL(env, napi_remove_wrap(env, args[0], reinterpret_cast<void**>(&obj)));
+  MyObject* obj = nullptr;
+  NAPI_CALL(env, napi_unwrap(env, args[0], reinterpret_cast<void**>(&obj)));
 
-  MyObject::Destructor(env, obj, nullptr); // release memory manually
+  bool is_in_pool = MyObject::pool.find(obj) != MyObject::pool.end();
+
+  if (is_in_pool) {
+    MyObject::Destructor(env, obj, nullptr); // release memory manually
+    MyObject::pool.erase(obj);
+  }
   
   napi_value result;
-  napi_get_boolean(env, false, &result);
+  napi_get_boolean(env, is_in_pool, &result);
   return result;
 }
 

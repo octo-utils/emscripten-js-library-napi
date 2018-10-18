@@ -1,7 +1,7 @@
 import * as INTL from "../../intl"
 
 export function napi_is_error(env, value, result) {
-	return INTL.safeCheckTag(result, INTL.handles[value], 'Error');
+	return INTL.safeCheckTag(result, INTL.getValue(value), 'Error');
 }
 
 export function napi_instanceof(env, value, Ctor, result) {
@@ -13,19 +13,19 @@ export function napi_instanceof(env, value, Ctor, result) {
 			// https://tc39.github.io/ecma262/#sec-instanceofoperator
 			return value instanceof Ctor;
 		},
-		INTL.handles[value],
-		INTL.handles[Ctor]
+		INTL.getValue(value),
+		INTL.getValue(Ctor)
 	);
 }
 
 export function napi_is_array(env, value, result) {
 	// can fail on a revoked Proxy
 	// https://tc39.github.io/ecma262/#sec-isarray
-	return INTL.safeJS(result, false, Array.isArray, INTL.handles[value]);
+	return INTL.safeJS(result, false, Array.isArray, INTL.getValue(value));
 }
 
 export function napi_is_arraybuffer(env, value, result) {
-	return INTL.safeCheckTag(result, INTL.handles[value], 'ArrayBuffer');
+	return INTL.safeCheckTag(result, INTL.getValue(value), 'ArrayBuffer');
 }
 
 export function napi_is_typedarray(env, value, result) {
@@ -34,27 +34,25 @@ export function napi_is_typedarray(env, value, result) {
 	}
 	// can't fail, only checks if an internal slot is present
 	// https://tc39.github.io/ecma262/#sec-arraybuffer.isview
-	return INTL.setResult(result, ArrayBuffer.isView(INTL.handles[value]));
+	return INTL.setResult(result, ArrayBuffer.isView(INTL.getValue(value)));
 }
 
 export function napi_typeof(env, value, result) {
-	const { value_type, handles } = INTL;
-	var value_ = handles[value];
+	const { value_type } = INTL;
+	var value_ = INTL.getValue(value);
 	var t = typeof value_;
 	if (t === 'object' && value_ === null) {
 		t = 'null';
 	}
-	// console.log("napi_typeof", value, t, value_);
 	return INTL.setResult(result, value_type[t]);
 }
 
 export function napi_strict_equals(env, lhs, rhs, result) {
-	const { STATUS, handles } = INTL;
-	// console.log("napi_strict_equals\n", handles[lhs] === handles[rhs], lhs, handles[lhs], rhs, handles[rhs]);
+	const { STATUS } = INTL;
 	if (INTL.hasPendingException()) {
 		return STATUS.PendingException();
 	}
 	// can't fail
 	// https://tc39.github.io/ecma262/#sec-strict-equality-comparison
-	return INTL.setResult(result, handles[lhs] === handles[rhs]);
+	return INTL.setResult(result, INTL.getValue(lhs) === INTL.getValue(rhs));
 }

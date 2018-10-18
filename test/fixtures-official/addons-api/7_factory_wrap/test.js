@@ -1,9 +1,10 @@
 'use strict';
 // Flags: --expose-gc
-
 const common = require('../../common');
+const commonBindingName = require("../../common-require-binding-name");
 const assert = require('assert');
-const test = require(`./build/${common.buildType}/binding`);
+const bindingPath = require.resolve(`./build/${common.buildType}/${commonBindingName()}`);
+const test = require(bindingPath);
 
 assert.strictEqual(test.finalizeCount, 0);
 (() => {
@@ -11,9 +12,11 @@ assert.strictEqual(test.finalizeCount, 0);
   assert.strictEqual(obj.plusOne(), 11);
   assert.strictEqual(obj.plusOne(), 12);
   assert.strictEqual(obj.plusOne(), 13);
-  test.releaseObject(obj);
+  assert.strictEqual(test.releaseObject(obj), true); // release manually
 })();
-global.gc();
+if (typeof global.gc === "function") {
+  global.gc();
+}
 assert.strictEqual(test.finalizeCount, 1);
 
 (() => {
@@ -21,7 +24,10 @@ assert.strictEqual(test.finalizeCount, 1);
   assert.strictEqual(obj2.plusOne(), 21);
   assert.strictEqual(obj2.plusOne(), 22);
   assert.strictEqual(obj2.plusOne(), 23);
-  test.releaseObject(obj2);
+  assert.strictEqual(test.releaseObject(obj2), true); // release manually
+  assert.strictEqual(test.releaseObject(obj2), false); //
 })();
-global.gc();
+if (typeof global.gc === "function") {
+  global.gc();
+}
 assert.strictEqual(test.finalizeCount, 2);

@@ -3,9 +3,11 @@
 
 static int finalize_count = 0;
 
+std::set<MyObject*> MyObject::pool = {};
+
 MyObject::MyObject() : env_(nullptr), wrapper_(nullptr) {}
 
-MyObject::~MyObject() { napi_delete_reference(env_, wrapper_); }
+MyObject::~MyObject() { napi_delete_reference(env_, wrapper_); wrapper_ = nullptr; }
 
 void MyObject::Destructor(napi_env env,
                           void* nativeObject,
@@ -50,6 +52,8 @@ napi_value MyObject::New(napi_env env, napi_callback_info info) {
   NAPI_CALL(env, napi_typeof(env, args[0], &valuetype));
 
   MyObject* obj = new MyObject();
+
+  MyObject::pool.insert(obj);
 
   if (valuetype == napi_undefined) {
     obj->counter_ = 0;

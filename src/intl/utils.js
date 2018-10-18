@@ -26,6 +26,10 @@ export function getStatusErrorInfo() {
 	return INTL.status_error_info;
 };
 
+export function getValue(handle) {
+	return INTL.handles[handle || INTL.undefined_handle];
+}
+
 export function createValue(value) {
 	let index = INTL.handles.indexOf(value);
 	if (index === -1) {
@@ -74,9 +78,9 @@ export function throwException(Ctor, code, msg) {
 }
 
 export function createException(Ctor, code, msg, result) {
-	let err = new Ctor(INTL.handles[msg]);
+	let err = new Ctor(INTL.getValue(msg));
 	if (code !== 0) {
-		err.code = INTL.handles[code];
+		err.code = INTL.getValue(code);
 	}
 	return INTL.setValue(result, err);
 }
@@ -134,11 +138,11 @@ export function wrapCallback(ptr, data, name = "") {
 				data: data,
 			};
 			return INTL.withNewScope(function () {
-				return INTL.handles[func(0, INTL.createValue(cbInfo))];
+				var result = func(0, INTL.createValue(cbInfo));
+				return INTL.getValue(result);
 			});
 		};
 	}
-
 	return new Function('ptr', 'data', 'func', 'INTL', `
 		return function ${name}(/*...args*/) {
 			var cbInfo = {
@@ -147,7 +151,8 @@ export function wrapCallback(ptr, data, name = "") {
 				data: data,
 			};
 			return INTL.withNewScope(function() {
-				return INTL.handles[func(0, INTL.createValue(cbInfo))];
+				var result = func(0, INTL.createValue(cbInfo));
+				return INTL.getValue(result);
 			});
 		};
 	`)(ptr, data, func, INTL);

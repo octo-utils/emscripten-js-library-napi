@@ -30,6 +30,6 @@ export function napi_create_array_with_length(env, length, result) {
 }
 
 export function napi_create_symbol(env, description, result) {
-	description = description ? INTL.handles[description] : '';
+	description = description ? INTL.getValue(description) : '';
 	return INTL.setValue(result, Symbol(description));
 }

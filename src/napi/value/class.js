@@ -64,7 +64,7 @@ export function napi_get_new_target(env, cbInfoPtr, result) {
 		return INTL.STATUS.PendingException();
 	}
   
-  var cbInfo = INTL.handles[cbInfoPtr];
+  var cbInfo = INTL.getValue(cbInfoPtr);
   if (cbInfo.__newTarget) {
     return INTL.setValue(result, cbInfo.__newTarget);
   }
@@ -104,7 +104,7 @@ export function napi_wrap(
 		return INTL.STATUS.PendingException();
 	}
 
-  var object = INTL.handles[objectPtr];
+  var object = INTL.getValue(objectPtr);
 
   Object.defineProperty(object, INTL.getKeyNapiWrap(), {
     enumerable: false,
@@ -120,18 +120,18 @@ export function napi_unwrap(env, objectPtr, result) {
 		return INTL.STATUS.PendingException();
 	}
 
-  var object = INTL.handles[objectPtr];
+  var object = INTL.getValue(objectPtr);
   var wrapped_info = object[INTL.getKeyNapiWrap()];
 
   if (typeof object !== "object") {
-    return INTL.STATUS.ObjectExpected();
+    return INTL.STATUS.GenericFailure();
   }
-
-  // console.log("napi_unwrap", objectPtr, object, wrapped_info);
 
   if (Array.isArray(wrapped_info)) {
     var nativeObjectPtr = wrapped_info[0];
     INTL.setResult(result, nativeObjectPtr);
+  } else {
+    return INTL.STATUS.GenericFailure();
   }
 
   return INTL.STATUS.Ok();
@@ -142,12 +142,16 @@ export function napi_remove_wrap(env, objectPtr, result) {
 		return INTL.STATUS.PendingException();
 	}
 
-  var object = INTL.handles[objectPtr];
+  var object = INTL.getValue(objectPtr);
   var wrapped_info = object[INTL.getKeyNapiWrap()];
+
   if (Array.isArray(wrapped_info)) {
     var nativeObjectPtr = wrapped_info[0];
     INTL.setResult(result, nativeObjectPtr);
     object[INTL.getKeyNapiWrap()] = void 0;
+  } else {
+    return INTL.STATUS.GenericFailure();
   }
+
   return INTL.STATUS.Ok();
 }

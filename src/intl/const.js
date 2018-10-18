@@ -50,7 +50,7 @@ export const _status_msgs = {
 export var _last_error = 0;
 
 export var STATUS = Object.keys(_status_msgs).reduce(function(result, key, i) {
-	result[key] = new Function(`INTL._last_error = ${i}`);
+	result[key] = new Function(`INTL._last_error = ${i}; return ${i}`);
 	return result;
 }, {});
 
