@@ -74,7 +74,8 @@ export function throwException(Ctor, code, msg) {
 	if (code !== 0) {
 		err.code = UTF8ToString(code);
 	}
-	return INTL.setPendingException(err);
+	throw err;
+	// return INTL.setPendingException(err);
 }
 
 export function createException(Ctor, code, msg, result) {

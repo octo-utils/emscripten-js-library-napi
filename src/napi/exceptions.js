@@ -21,26 +21,22 @@ export function napi_create_range_error(env, code, msg, result) {
 }
 
 export function napi_throw(env, error) {
-	const status = INTL.setPendingException(INTL.getValue(error));
-	throw INTL._pending_exception;
+	throw INTL.getValue(error);
 	return status;
 }
 
 export function napi_throw_error(env, code, msg) {
 	const status = INTL.throwException(Error, code, msg);
-	throw INTL._pending_exception;
 	return status;
 }
 
 export function napi_throw_type_error(env, code, msg) {
 	const status = INTL.throwException(TypeError, code, msg);
-	throw INTL._pending_exception;
 	return status;
 }
 
 export function napi_throw_range_error(env, code, msg) {
 	const status = INTL.throwException(RangeError, code, msg);
-	throw INTL._pending_exception;
 	return status;
 }
 
